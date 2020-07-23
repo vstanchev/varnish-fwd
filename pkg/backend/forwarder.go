@@ -21,6 +21,7 @@ func NewRequestForwarder(provider Provider) *RequestForwarder {
 }
 
 func (f RequestForwarder) Handle(w http.ResponseWriter, r *http.Request)  {
+  log.Printf("Got request: %s %s %v\n", r.Method, r.URL.String(), r.Header)
 	globalStatus := http.StatusBadGateway
 	backendUrls := f.Provider.GetBackendUrls()
 	var statuses = make([]int, len(backendUrls))
