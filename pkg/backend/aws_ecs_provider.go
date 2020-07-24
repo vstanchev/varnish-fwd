@@ -70,13 +70,23 @@ func (p *AwsEcsProvider) InitializeEcsClient() {
 		Config:                  awsConfig,
 	}))
 
-	// The first three arguments are used for cache key. Since we support only one AWS account and one cache they can
-	// be hardcoded strings.
-	if cacheProvider, err := token.NewFileCacheProvider("default", "default", "default", sess.Config.Credentials); err == nil {
-		sess.Config.Credentials = credentials.NewCredentials(&cacheProvider)
-	} else {
-		log.Fatalf("Unable to use cache: %v\n", err)
-	}
+	// Use cache if necessary
+  if _, isSet := os.LookupEnv("AWS_IAM_AUTHENTICATOR_CACHE_FILE"); isSet {
+    // The first three arguments are used for cache key. Since we support only one AWS account and one cache they can
+    // be hardcoded strings.
+    cacheProvider, err := token.NewFileCacheProvider(
+      "default",
+      "default",
+      "default",
+      sess.Config.Credentials,
+    )
+
+    if err == nil {
+      sess.Config.Credentials = credentials.NewCredentials(&cacheProvider)
+    } else {
+      log.Fatalf("Unable to use cache: %v\n", err)
+    }
+  }
 
 	p.ecsClient = ecs.New(sess)
 }
