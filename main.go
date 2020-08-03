@@ -51,7 +51,7 @@ func main() {
 	}
 
 	// Validate and log all the backend URLs.
-	validateUrls := provider.GetBackendUrls()
+	validateUrls := provider.GetBackendUrls(false)
 	if len(validateUrls) == 0 {
 	  log.Fatal("No backends provided!")
   }

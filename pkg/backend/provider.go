@@ -11,14 +11,14 @@ const backendsEnv = "FWD_BACKENDS"
 const backendsEnvSeparator = ","
 
 type Provider interface {
-	GetBackendUrls() []string
+	GetBackendUrls(resetCache bool) []string
 }
 
 type StaticProvider struct {
 	backendUrls []string
 }
 
-func (s *StaticProvider) GetBackendUrls() []string {
+func (s *StaticProvider) GetBackendUrls(resetCache bool) []string {
 	return s.backendUrls
 }
 

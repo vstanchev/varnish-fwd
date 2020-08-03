@@ -91,9 +91,9 @@ func (p *AwsEcsProvider) InitializeEcsClient() {
 	p.ecsClient = ecs.New(sess)
 }
 
-func (p *AwsEcsProvider) GetBackendUrls() []string {
+func (p *AwsEcsProvider) GetBackendUrls(resetCache bool) []string {
   // Caching the backends indefinitely upon first call.
-	if len(p.backendsCached) > 0 {
+	if !resetCache && len(p.backendsCached) > 0 {
 		return p.backendsCached
 	}
 
