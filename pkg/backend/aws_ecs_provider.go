@@ -115,13 +115,14 @@ func (p *AwsEcsProvider) GetBackendUrls(resetCache bool) []string {
     log.Fatalf("Could not DescribeTasks: %v\n", err)
   }
 
+  var backends []string
 	for _, task := range tasks.Tasks {
 		for _, container := range task.Containers {
 			for _, networkInterface := range container.NetworkInterfaces {
 
 			  // Build URI from the IP address of the ECS container.
-				p.backendsCached = append(
-				  p.backendsCached,
+				backends = append(
+				  backends,
 				  fmt.Sprintf(
 				    "%s://%s:%s",
 				    p.backendScheme,
@@ -133,5 +134,6 @@ func (p *AwsEcsProvider) GetBackendUrls(resetCache bool) []string {
 			}
 		}
 	}
+	p.backendsCached = backends
 	return p.backendsCached
 }
