@@ -14,6 +14,8 @@ const backendsProviderEnv = "FWD_PROVIDER"
 const portEnv = "FWD_PORT"
 
 func main() {
+  // @todo parallel requests to varnishes
+  // @todo timer for refreshing varnish instances, if new added - clear all with `http_response` cache-tag
 	// @todo connection keep-alive and timeouts
 	// @todo logging of all requests and responses
 	// @todo create a struct to hold all app config and parsing
@@ -39,6 +41,8 @@ func main() {
 	switch providerType {
 	case "static":
 		provider, err = backend.NewStaticProviderFromEnv()
+  case "file":
+    provider, err = backend.NewFileProviderFromEnv()
 	case "ecs":
 		provider, err = backend.NewAwsEcsProviderFromEnv()
 	default:
