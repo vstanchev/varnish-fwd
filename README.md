@@ -1,5 +1,48 @@
 # Varnish forwarder
-Forwards BAN and PURGE requests from Drupal to multiple Varnish cache servers.
+Transparently forwards all requests to multiple Varnish cache servers. Has an option to get the servers' IP
+addresses from [AWS ECS](https://aws.amazon.com/ecs/) given a cluster and service names.
+
+# Build and run
+```bash
+$ go mod download
+$ go build -o main .
+$ FWD_PROVIDER=static FWD_BACKENDS=http://127.0.0.1:3000,http://127.0.0.1:3001 ./main
+```
+
+In two other terminals launch the two example backends by running:
+```bash
+$ npx http-echo-server 3000
+```
+and
+```bash
+$ npx http-echo-server 3001
+```
+
+Sending requests to `http://localhost:6081/test` will result in the following output.
+```bash
+$ curl -v -X BAN http://localhost:6081/test
+*   Trying 127.0.0.1:6081...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 6081 (#0)
+> BAN /test HTTP/1.1
+> Host: localhost:6081
+> User-Agent: curl/7.68.0
+> Accept: */*
+>
+< HTTP/1.1 200 OK
+< Date: Mon, 18 Oct 2021 16:08:44 GMT
+< Content-Length: 22
+< Content-Type: text/plain; charset=utf-8
+<
+{"statuses":[200,200]}
+```
+
+# Docker
+There's a `Dockerfile` which can be built and run as follows:
+```bash
+$ docker build -t varnish-fwd -f Dockerfile .
+$ docker run --rm -it -p 6081:6081 -e FWD_PROVIDER=static -e FWD_BACKENDS=http://172.17.0.1:3000,http://172.17.0.1:3001 varnish-fwd
+```
 
 # Environment variables
 
